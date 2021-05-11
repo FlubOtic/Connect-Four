@@ -58,6 +58,7 @@ def GameLoop():
 
     crash = False
     won = False
+    draw = False
     text = False
 
     while not crash:
@@ -74,21 +75,27 @@ def GameLoop():
                 turn_made = turn(pygame.mouse.get_pos(), circle, player_turn[0], player_turn[1], board, screen)
                 won = board.won
 
-                if player_turn == player1 and turn_made and not won:
+                if not won:
+                    draw = board.draw()
+
+                if player_turn == player1 and turn_made and not (won or draw):
                     player_turn = player2
-                elif player_turn == player2 and turn_made and not won:
+                elif turn_made and not (won or draw):
                     player_turn = player1
 
-            elif event.type == pygame.KEYDOWN and won:
+            elif event.type == pygame.KEYDOWN and (won or draw):
                 if event.key == pygame.K_RETURN:
                     GameLoop()
                     crash = True
                     break
 
-        if not text and won:
+        if not text and (won or draw):
             text = True
             screen.fill((255, 255, 255))
-            draw_text(screen, player_turn[0] + " Wins!", 100, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2-50))
+            if won:
+                draw_text(screen, player_turn[0] + " Wins!", 100, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2-50))
+            else: 
+                draw_text(screen, "Draw", 100, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2-50))
             draw_text(screen, "Press Enter To Play Again", 50, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2+50))
 
 
